@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity,Text,Button, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { addItem } from '../redux/shoppingListSlice';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import the icon library
@@ -12,8 +12,8 @@ const AddItemForm = () => {
   const handleAddItem = () => {
     if (name.trim() && quantity.trim()) {
       dispatch(addItem({ name, quantity }));
-      setName('');
-      setQuantity('');
+      setName(''); // Clear name field after adding
+      setQuantity(''); // Clear quantity field after adding
     }
   };
 
@@ -42,6 +42,7 @@ const AddItemForm = () => {
         />
       </View>
 
+      {/* Add Item Button */}
       <TouchableOpacity style={styles.button} onPress={handleAddItem}>
         <Text style={styles.buttonText}>Add Item</Text>
       </TouchableOpacity>
@@ -53,11 +54,13 @@ const styles = StyleSheet.create({
   form: {
     marginBottom: 16,
     padding: 30,
+    backgroundColor: '#f9f9f9', // Optional: Add a background color for the form area
+    borderRadius: 10, // Optional: Add rounded corners for the form area
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12, // Increased space between inputs
   },
   input: {
     flex: 1,
@@ -66,21 +69,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginLeft: 10,
     paddingHorizontal: 8,
+    borderRadius: 5, // Rounded corners for input fields
   },
-  button:{
-    alignItems:'center',
-    borderRadius:25,
-    backgroundColor:'Orange',
-    backgroundColor: '#4CAF50',
-    padding:10,
-    // Left:'30%',
-    width:100,
-
-
+  button: {
+    alignItems: 'center',
+    borderRadius: 25,
+    backgroundColor: '#4CAF50', // Green button color
+    paddingVertical: 10,
+    width: 120, // Set a fixed width for the button
+    marginTop: 16, // Space above the button
+    alignSelf: 'center', // Center the button horizontally
   },
   buttonText: {
     color: '#fff', // White text color
-    fontSize: 14, // Reduced font size
+    fontSize: 16, // Slightly larger font size
     fontWeight: 'bold',
   },
 });
