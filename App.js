@@ -17,9 +17,9 @@ const CustomDrawerContent = (props) => {
       {/* First Section: Logo and Profile */}
       <View style={styles.drawerHeader}>
         <Image source={require('./assets/logo.png')} style={styles.drawerLogo} />
-        <View style={styles.profileCircle}>
+        {/* <View style={styles.profileCircle}>
           <Ionicons name="person-circle-outline" size={50} color="#fff" />
-        </View>
+        </View> */}
       </View>
 
       {/* Middle Section: Menu Items */}
@@ -109,16 +109,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   drawerHeader: {
+    margin:20,
     alignItems: 'center',
     marginBottom: 20,
-    flexDirection:'row',
-    justifyContent:'space-between'
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   drawerLogo: {
     width: 50,
     height: 50,
     marginBottom: 10,
-    
   },
   profileCircle: {
     width: 40,
@@ -129,10 +129,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoutSection: {
-    marginTop: 'auto',
+    top:'200%',
     borderTopWidth: 1,
     borderColor: '#ccc',
+    paddingVertical: 10,
   },
 });
+
 
 export default App;
