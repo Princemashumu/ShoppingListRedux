@@ -114,7 +114,7 @@ const ShoppingList = () => {
       setIsItemModalVisible(false);
     }
   };
-  
+
   const handleEditItem = () => {
     if (editingItem && newItemName.trim() && newItemQuantity.trim()) {
       const updatedCategories = categories.map((category) =>
@@ -203,7 +203,7 @@ const ShoppingList = () => {
             </TouchableOpacity>
           ) : (
             <TouchableOpacity onPress={() => { setEditingCategoryId(item.id); setNewCategoryName(item.name); }}>
-              <Icon name="edit" size={20} color="#4CAF50" />
+              <Icon name="edit" size={20} color="white" />
             </TouchableOpacity>
           )}
           <TouchableOpacity onPress={() => handleDeleteCategory(item.id)}>
@@ -340,14 +340,14 @@ const ShoppingList = () => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#FFF8F3', // Softer background color
+      backgroundColor: '#A2DBFA', // Softer background color
       paddingTop: 20,
       paddingHorizontal: 15,
     },
     category: {
       marginBottom: 15,
     //   backgroundColor: '#FFFFFF',
-    backgroundColor:'#758694',
+    backgroundColor:'#39A2DB',
       borderRadius: 12, // Slightly more rounded corners
       padding: 15,
       shadowColor: '#000',
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     },
     addItemButton: {
       marginTop: 15,
-      backgroundColor: '#F45050', // Brighter, more vibrant 
+      backgroundColor: '#053742', // Brighter, more vibrant 
       paddingVertical: 12,
       borderRadius: 25,
       alignItems: 'center',
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
       position: 'absolute',
       bottom: 25,
       right: 25,
-      backgroundColor: '#F45050', // Vibrant green
+      backgroundColor: '#053742', // Vibrant green
       width: 65,
       height: 65,
       borderRadius: 35,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     },
     input: {
       height: 45, // Slightly taller input
-      borderColor: '#BDC3C7',
+      borderColor: '#39A2DB',
       borderWidth: 1,
       borderRadius: 8,
       paddingHorizontal: 12,
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
       padding: 20,
     },
     modalButton: {
-      backgroundColor: '#F45050',
+      backgroundColor: '#053742',
       color: '#FFFFFF',
       paddingVertical: 12,
       paddingHorizontal: 25,
@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: '90%', // Slightly narrower than full width
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#39A2DB',
     borderRadius: 15, // More pronounced rounded corners
     padding: 25,
     shadowColor: '#000',
@@ -479,7 +479,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50, // Taller input
-    borderColor: '#E0E0E0',
+    borderColor: '#39A2DB',
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 15,
@@ -489,9 +489,9 @@ const styles = StyleSheet.create({
     color: '#2C3E50',
   },
   inputFocused: {
-    borderColor: '#3498DB',
+    borderColor: '#39A2DB',
     backgroundColor: '#FFFFFF',
-    shadowColor: '#3498DB',
+    shadowColor: '#39A2DB',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -509,9 +509,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    gap:20
   },
   modalButtonPrimary: {
-    backgroundColor: '#F45050',
+    backgroundColor: '#053742',
     marginRight: 10,
   },
   modalButtonSecondary: {
