@@ -6,7 +6,7 @@ import AddItemForm from '../components/AddItemForm';
 const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <AddItemForm />
+      {/* <AddItemForm /> */}
       <ShoppingList />
     </SafeAreaView>
   );
