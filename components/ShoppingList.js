@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, Modal,  Alert, ToastAndroid, Platform,ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import the icon library
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
@@ -14,7 +14,9 @@ const ShoppingList = () => {
   const [currentCategoryId, setCurrentCategoryId] = useState(null); // Store the id of the category for adding item
   const [editingItem, setEditingItem] = useState(null); // State to control editing of an item
   const [editingCategoryId, setEditingCategoryId] = useState(null); // Store the category id being edited
+  const [expandedCategories, setExpandedCategories] = useState({});
 
+  
   // Load data from AsyncStorage on component mount
   useEffect(() => {
     const loadData = async () => {
@@ -44,100 +46,235 @@ const ShoppingList = () => {
     }
   }, [categories]);
 
-  const handleAddCategory = () => {
-    if (newCategoryName.trim() && !categories.some(category => category.name === newCategoryName.trim())) {
-      const newCategory = {
-        id: categories.length + 1,
-        name: newCategoryName,
-        items: [],
-      };
-      setCategories([...categories, newCategory]);
-      setNewCategoryName('');
-      setIsCategoryModalVisible(false);
-    } else {
-      Alert.alert('Category already exists', 'Please choose a different category name.');
+// Helper function for cross-platform toast notifications
+const showToast = (message) => {
+  if (Platform.OS === 'android') {
+    ToastAndroid.show(message, ToastAndroid.SHORT);
+  } else {
+    // For iOS, you might want to use a different toast library or Alert
+    Alert.alert('Notification', message);
+  }
+};
+
+
+
+const handleAddCategory = () => {
+  try {
+    if (!newCategoryName.trim()) {
+      Alert.alert('Error', 'Category name cannot be empty.');
+      return;
     }
-  };
+
+    if (categories.some(category => category.name.toLowerCase() === newCategoryName.trim().toLowerCase())) {
+      Alert.alert('Error', 'A category with this name already exists.');
+      return;
+    }
+
+    const newCategory = {
+      id: categories.length + 1,
+      name: newCategoryName.trim(),
+      items: [],
+    };
+    
+    setCategories([...categories, newCategory]);
+    setNewCategoryName('');
+    setIsCategoryModalVisible(false);
+    
+    // Show success toast
+    showToast(`Category "${newCategory.name}" added successfully`);
+  } catch (error) {
+    console.error('Error adding category:', error);
+    Alert.alert('Error', 'Failed to add category. Please try again.');
+  }
+};
+
+const handleEditCategory = () => {
+  try {
+    if (editingCategoryId === null) {
+      Alert.alert('Error', 'No category selected for editing.');
+      return;
+    }
+
+    if (!newCategoryName.trim()) {
+      Alert.alert('Error', 'Category name cannot be empty.');
+      return;
+    }
+
+    // Check for duplicate category names, excluding the current category being edited
+    if (categories.some(category => 
+      category.id !== editingCategoryId && 
+      category.name.toLowerCase() === newCategoryName.trim().toLowerCase()
+    )) {
+      Alert.alert('Error', 'A category with this name already exists.');
+      return;
+    }
+
+    const oldCategoryName = categories.find(c => c.id === editingCategoryId)?.name;
+    
+    const updatedCategories = categories.map((category) =>
+      category.id === editingCategoryId
+        ? { ...category, name: newCategoryName.trim() }
+        : category
+    );
+    
+    setCategories(updatedCategories);
+    setNewCategoryName('');
+    setEditingCategoryId(null);
+    setIsCategoryModalVisible(false);
+    
+    // Show success toast
+    showToast(`Category renamed from "${oldCategoryName}" to "${newCategoryName}"`);
+  } catch (error) {
+    console.error('Error editing category:', error);
+    Alert.alert('Error', 'Failed to edit category. Please try again.');
+  }
+};
+
+const handleDeleteCategory = (categoryId) => {
+  const categoryToDelete = categories.find(category => category.id === categoryId);
   
-
-  const handleEditCategory = () => {
-    if (editingCategoryId !== null && newCategoryName.trim()) {
-      const updatedCategories = categories.map((category) =>
-        category.id === editingCategoryId
-          ? { ...category, name: newCategoryName }
-          : category
-      );
-      setCategories(updatedCategories);
-      setNewCategoryName('');
-      setEditingCategoryId(null);
-      setIsCategoryModalVisible(false); // Close the category modal after editing
-    }
-  };
-
-  const handleDeleteCategory = (categoryId) => {
-    Alert.alert(
-      'Delete Category',
-      'Are you sure you want to delete this category?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Delete',
-          onPress: () => {
+  Alert.alert(
+    'Delete Category',
+    `Are you sure you want to delete the category "${categoryToDelete.name}"?`,
+    [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          try {
             const updatedCategories = categories.filter((category) => category.id !== categoryId);
             setCategories(updatedCategories);
-          },
+            
+            // Show success toast
+            showToast(`Category "${categoryToDelete.name}" deleted successfully`);
+          } catch (error) {
+            console.error('Error deleting category:', error);
+            Alert.alert('Error', 'Failed to delete category. Please try again.');
+          }
         },
-      ],
-      { cancelable: false }
+      },
+    ],
+    { cancelable: false }
+  );
+};
+
+const handleAddItemToCategory = () => {
+  try {
+    if (!newItemName.trim()) {
+      Alert.alert('Error', 'Item name cannot be empty.');
+      return;
+    }
+
+    if (!newItemQuantity.trim()) {
+      Alert.alert('Error', 'Item quantity cannot be empty.');
+      return;
+    }
+
+    // Check if the item already exists in the category
+    const categoryToUpdate = categories.find(category => category.id === currentCategoryId);
+    if (categoryToUpdate.items.some(item => 
+      item.name.toLowerCase() === newItemName.trim().toLowerCase()
+    )) {
+      Alert.alert('Error', 'An item with this name already exists in this category.');
+      return;
+    }
+
+    const newItem = {
+      id: Date.now(),
+      name: newItemName.trim(),
+      quantity: newItemQuantity.trim(),
+      completed: false
+    };
+
+    const updatedCategories = categories.map((category) =>
+      category.id === currentCategoryId
+        ? {
+            ...category,
+            items: [...category.items, newItem],
+          }
+        : category
     );
-  };
+    
+    setCategories(updatedCategories);
+    setNewItemName('');
+    setNewItemQuantity('');
+    setIsItemModalVisible(false);
+    
+    // Show success toast
+    showToast(`Item "${newItem.name}" added to category`);
+  } catch (error) {
+    console.error('Error adding item:', error);
+    Alert.alert('Error', 'Failed to add item. Please try again.');
+  }
+};
 
-  const handleAddItemToCategory = () => {
-    if (newItemName.trim() && newItemQuantity.trim()) {
-      const updatedCategories = categories.map((category) =>
-        category.id === currentCategoryId
-          ? {
-              ...category,
-              items: [
-                ...category.items,
-                { id: Date.now(), name: newItemName, quantity: newItemQuantity, completed: false },
-              ],
-            }
-          : category
-      );
-      setCategories(updatedCategories);
-      setNewItemName('');
-      setNewItemQuantity('');
-      setIsItemModalVisible(false);
+const handleEditItem = () => {
+  try {
+    if (!editingItem) {
+      Alert.alert('Error', 'No item selected for editing.');
+      return;
     }
-  };
 
-  const handleEditItem = () => {
-    if (editingItem && newItemName.trim() && newItemQuantity.trim()) {
-      const updatedCategories = categories.map((category) =>
-        category.id === currentCategoryId
-          ? {
-              ...category,
-              items: category.items.map((item) =>
-                item.id === editingItem.id
-                  ? { ...item, name: newItemName, quantity: newItemQuantity }
-                  : item
-              ),
-            }
-          : category
-      );
-      setCategories(updatedCategories);
-      setEditingItem(null);
-      setNewItemName('');
-      setNewItemQuantity('');
-      setIsItemModalVisible(false); // Close the item modal after editing
+    if (!newItemName.trim()) {
+      Alert.alert('Error', 'Item name cannot be empty.');
+      return;
     }
-  };
 
-  const handleDeleteItem = (categoryId, itemId) => {
+    if (!newItemQuantity.trim()) {
+      Alert.alert('Error', 'Item quantity cannot be empty.');
+      return;
+    }
+
+    // Check if the item name is being changed to an existing item name
+    const categoryToUpdate = categories.find(category => category.id === currentCategoryId);
+    if (categoryToUpdate.items.some(item => 
+      item.id !== editingItem.id && 
+      item.name.toLowerCase() === newItemName.trim().toLowerCase()
+    )) {
+      Alert.alert('Error', 'An item with this name already exists in this category.');
+      return;
+    }
+
+    const updatedCategories = categories.map((category) =>
+      category.id === currentCategoryId
+        ? {
+            ...category,
+            items: category.items.map((item) =>
+              item.id === editingItem.id
+                ? { 
+                    ...item, 
+                    name: newItemName.trim(), 
+                    quantity: newItemQuantity.trim() 
+                  }
+                : item
+            ),
+          }
+        : category
+    );
+    
+    setCategories(updatedCategories);
+    setEditingItem(null);
+    setNewItemName('');
+    setNewItemQuantity('');
+    setIsItemModalVisible(false);
+    
+    // Show success toast
+    showToast(`Item "${newItemName}" updated successfully`);
+  } catch (error) {
+    console.error('Error editing item:', error);
+    Alert.alert('Error', 'Failed to edit item. Please try again.');
+  }
+};
+
+const handleDeleteItem = (categoryId, itemId) => {
+  try {
+    const categoryToUpdate = categories.find(category => category.id === categoryId);
+    const itemToDelete = categoryToUpdate.items.find(item => item.id === itemId);
+
     const updatedCategories = categories.map((category) =>
       category.id === categoryId
         ? {
@@ -146,22 +283,45 @@ const ShoppingList = () => {
           }
         : category
     );
+    
     setCategories(updatedCategories);
-  };
+    
+    // Show success toast
+    showToast(`Item "${itemToDelete.name}" deleted successfully`);
+  } catch (error) {
+    console.error('Error deleting item:', error);
+    Alert.alert('Error', 'Failed to delete item. Please try again.');
+  }
+};
 
-  const handleToggleItem = (categoryId, itemId) => {
+const handleToggleItem = (categoryId, itemId) => {
+  try {
     const updatedCategories = categories.map((category) =>
       category.id === categoryId
         ? {
             ...category,
             items: category.items.map((item) =>
-              item.id === itemId ? { ...item, completed: !item.completed } : item
+              item.id === itemId 
+                ? { ...item, completed: !item.completed } 
+                : item
             ),
           }
         : category
     );
+    
     setCategories(updatedCategories);
-  };
+    
+    // Determine the new status for toast message
+    const categoryToUpdate = updatedCategories.find(category => category.id === categoryId);
+    const toggledItem = categoryToUpdate.items.find(item => item.id === itemId);
+    
+    // Show toast with item status
+    showToast(`Item "${toggledItem.name}" marked as ${toggledItem.completed ? 'completed' : 'pending'}`);
+  } catch (error) {
+    console.error('Error toggling item:', error);
+    Alert.alert('Error', 'Failed to update item status. Please try again.');
+  }
+};
 
   const renderItem = ({ item, categoryId }) => (
     <View style={styles.item}>
@@ -227,65 +387,147 @@ const ShoppingList = () => {
       </TouchableOpacity>
     </View>
   );
+// Toggle category expansion
+const toggleCategoryExpansion = (categoryId) => {
+  setExpandedCategories(prev => ({
+    ...prev,
+    [categoryId]: !prev[categoryId]
+  }));
+};
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={categories}
-        renderItem={renderCategory}
-        keyExtractor={(item) => item.id.toString()}
-      />
+    <ScrollView 
+      contentContainerStyle={styles.scrollViewContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      {categories.map((category) => (
+        <View key={category.id} style={styles.category}>
+          <TouchableOpacity 
+            style={styles.categoryHeader} 
+            onPress={() => toggleCategoryExpansion(category.id)}
+          >
+            {editingCategoryId === category.id ? (
+              <TextInput
+                style={styles.input}
+                value={newCategoryName}
+                onChangeText={setNewCategoryName}
+                autoFocus
+              />
+            ) : (
+              <Text style={styles.categoryTitle}>{category.name}</Text>
+            )}
+            
+            <View style={styles.categoryActions}>
+              {editingCategoryId === category.id ? (
+                <TouchableOpacity onPress={handleEditCategory}>
+                  <Icon name="check" size={20} color="#4CAF50" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => { 
+                  setEditingCategoryId(category.id); 
+                  setNewCategoryName(category.name); 
+                }}>
+                  <Icon name="edit" size={20} color="white" />
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity onPress={() => handleDeleteCategory(category.id)}>
+                <Icon name="delete" size={20} color="#f44336" />
+              </TouchableOpacity>
+              <Icon 
+                name={expandedCategories[category.id] ? "expand-less" : "expand-more"} 
+                size={20} 
+                color="white" 
+              />
+            </View>
+          </TouchableOpacity>
 
-      {/* Add Category Button */}
-      <TouchableOpacity
-        style={styles.addCategoryButton}
-        onPress={() => setIsCategoryModalVisible(true)} // Show the category modal when clicked
-      >
-        <Icon name="add" size={30} color="#fff" />
-      </TouchableOpacity>
+          {expandedCategories[category.id] && (
+            <View>
+              {category.items.map((itemDetail) => (
+                <View key={itemDetail.id} style={styles.item}>
+                  <Text style={itemDetail.completed ? styles.completedItem : null}>
+                    {itemDetail.name} - {itemDetail.quantity}
+                  </Text>
+                  <View style={styles.itemActions}>
+                    <TouchableOpacity onPress={() => { 
+                      setEditingItem(itemDetail); 
+                      setNewItemName(itemDetail.name); 
+                      setNewItemQuantity(itemDetail.quantity); 
+                      setIsItemModalVisible(true); 
+                    }}>
+                      <Icon name="edit" size={20} color="#4CAF50" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDeleteItem(category.id, itemDetail.id)}>
+                      <Icon name="delete" size={20} color="#f44336" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleToggleItem(category.id, itemDetail.id)}>
+                      <Icon name={itemDetail.completed ? "check-box" : "check-box-outline-blank"} size={20} color="#2196F3" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+              
+              <TouchableOpacity
+                style={styles.addItemButton}
+                onPress={() => {
+                  setCurrentCategoryId(category.id);
+                  setIsItemModalVisible(true);
+                }}
+              >
+                <Icon name="add-shopping-cart" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      ))}
+    </ScrollView>
+
+    <TouchableOpacity
+      style={styles.addCategoryButton}
+      onPress={() => setIsCategoryModalVisible(true)}
+    >
+      <Icon name="add" size={30} color="#fff" />
+    </TouchableOpacity>
 
     {/* Modal for Add/Edit Category */}
-<Modal
-  visible={isCategoryModalVisible}
-  animationType="slide"
-  transparent={true}
-  onRequestClose={() => setIsCategoryModalVisible(false)}
->
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalContainer}>
-      <Text style={styles.modalTitle}>
-        {editingCategoryId ? "Edit Category" : "Add Category"}
-      </Text>
-      <TextInput
-        style={[
-          styles.input, 
-          // You could add a focused state handler here if desired
-          // isFocused && styles.inputFocused
-        ]}
-        value={newCategoryName}
-        onChangeText={setNewCategoryName}
-        placeholder="Enter category name"
-        placeholderTextColor="#A9A9A9"
-      />
-      <View style={styles.modalButtonContainer}>
-        <TouchableOpacity 
-          style={[styles.modalButton, styles.modalButtonSecondary]}
-          onPress={() => setIsCategoryModalVisible(false)}
-        >
-          <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.modalButton, styles.modalButtonPrimary]}
-          onPress={editingCategoryId ? handleEditCategory : handleAddCategory}
-        >
-          <Text style={styles.modalButtonText}>
-            {editingCategoryId ? "Save" : "Add"}
+    <Modal
+      visible={isCategoryModalVisible}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={() => setIsCategoryModalVisible(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>
+            {editingCategoryId ? "Edit Category" : "Add Category"}
           </Text>
-        </TouchableOpacity>
+          <TextInput
+            style={styles.input}
+            value={newCategoryName}
+            onChangeText={setNewCategoryName}
+            placeholder="Enter category name"
+            placeholderTextColor="#A9A9A9"
+          />
+          <View style={styles.modalButtonContainer}>
+            <TouchableOpacity 
+              style={[styles.modalButton, styles.modalButtonSecondary]}
+              onPress={() => setIsCategoryModalVisible(false)}
+            >
+              <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.modalButton, styles.modalButtonPrimary]}
+              onPress={editingCategoryId ? handleEditCategory : handleAddCategory}
+            >
+              <Text style={styles.modalButtonText}>
+                {editingCategoryId ? "Save" : "Add"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
-    </View>
-  </View>
-</Modal>
+    </Modal>
 
 {/* Modal for Add/Edit Item */}
 <Modal
