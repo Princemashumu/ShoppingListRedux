@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ShoppingListRedux",
-    "slug": "ShoppingListRedux",
+    "slug": "shopperlist",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,6 +24,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "903907c7-b7ac-4c81-abdd-49ecac8462a3"
+      }
+    },
+    "owner": "mernprince"
   }
 }
