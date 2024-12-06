@@ -17,16 +17,14 @@ const CustomDrawerContent = (props) => {
       {/* First Section: Logo and Profile */}
       <View style={styles.drawerHeader}>
         <Image source={require('./assets/logo.png')} style={styles.drawerLogo} />
-        {/* <View style={styles.profileCircle}>
-          <Ionicons name="person-circle-outline" size={50} color="#fff" />
-        </View> */}
+        <Text style={styles.appTitle}>Shopperlist</Text>
       </View>
 
       {/* Middle Section: Menu Items */}
       <DrawerItemList {...props} />
 
       {/* Last Section: Logout */}
-      <View style={styles.logoutSection}>
+      {/* <View style={styles.logoutSection}>
         <DrawerItem
           label="Logout"
           onPress={() => {
@@ -37,7 +35,7 @@ const CustomDrawerContent = (props) => {
             <Ionicons name="log-out-outline" size={size} color={color} />
           )}
         />
-      </View>
+      </View> */}
     </DrawerContentScrollView>
   );
 };
@@ -45,9 +43,10 @@ const CustomDrawerContent = (props) => {
 const SplashScreen = () => {
   return (
     <View style={styles.splashContainer}>
-      <Image source={require('./assets/logo.png')} style={styles.logo} />
-      <ActivityIndicator size="large" color="#4CAF50" />
-    </View>
+  <Image source={require('./assets/logo.png')} style={styles.logo} />
+  <Text style={styles.appTitle}>Shopperlist</Text>
+  <ActivityIndicator size="large" color="#4CAF50" />
+</View>
   );
 };
 
@@ -80,7 +79,7 @@ const App = () => {
                 ),
               }}
             />
-            <Drawer.Screen
+            {/* <Drawer.Screen
               name="Profile"
               component={ProfileScreen}
               options={{
@@ -88,7 +87,7 @@ const App = () => {
                   <Ionicons name="person-outline" size={size} color={color} />
                 ),
               }}
-            />
+            /> */}
           </Drawer.Navigator>
         )}
       </NavigationContainer>
@@ -133,6 +132,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: '#ccc',
     paddingVertical: 10,
+  },
+  appTitle: {
+    fontSize: 30, // Larger font size
+    fontWeight: 'bold', // Bold text
+    color: '#007BFF', // Blue color
+    marginBottom: 20, // Spacing between text and ActivityIndicator
+    textTransform: 'uppercase', // Capitalize all letters
+    letterSpacing: 1.5, // Add some spacing between letters
   },
 });
 
