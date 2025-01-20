@@ -36,6 +36,30 @@ This **Shopping List App** is a **React Native** application for managing shoppi
 
 ### 1️⃣ Clone the repository:
 ```bash
-git clone https://github.com/your-username/shopping-list-app.git
-cd shopping-list-app
+https://github.com/Princemashumu/ShoppingListRedux.git
+```
 
+
+2️⃣ Install dependencies:
+```
+cd ShoppingListRedux
+```
+```
+npm install
+```
+
+3️⃣ Run the app:
+For iOS:
+```
+npx react-native run-ios
+```
+For Android:
+```
+
+npx react-native run-android
+```
+## 📝 Contributing
+If you want to contribute to the project, feel free to fork the repository and submit a pull request with your changes. Make sure to follow the coding standards and write tests for any new features or bug fixes.
+
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
