@@ -1,18 +1,24 @@
 # 🛒 Shopping List App
 
-## 📖 Overview
-This **Shopping List App** is a **React Native** application for managing shopping categories and items. 🛍️ It supports adding, editing, deleting, and toggling items and categories, with data persistence through **AsyncStorage**. The app includes intuitive cross-platform features and user-friendly feedback with alerts and toast notifications. 📲
+## 📚 Overview
+This **Shopping List App** is a **React Native** application for managing shopping categories and items. 🍽️ It supports adding, editing, deleting, and toggling items and categories, with data persistence through **AsyncStorage**. The app includes intuitive cross-platform features and user-friendly feedback with alerts and toast notifications. 📲
+
+
+## 🔗 Expo Link
+You can also preview the app using **Expo**:
+[Expo Build Link](https://expo.dev/accounts/mernprince/projects/app-name/builds/b36cba00-338d-4d2d-915d-d7b6beb11a99)
 
 ---
 
+
 ## ✨ Features
 
-### 🗂️ Categories Management
+### 🛂 Categories Management
 - ➕ **Add** new categories.  
 - 📝 **Edit** existing categories.  
 - ❌ **Delete** categories with confirmation prompts.  
 
-### 🛍️ Items Management
+### 🍽️ Items Management
 - ➕ **Add** items to specific categories with quantity details.  
 - 📝 **Edit** item details (name and quantity).  
 - ❌ **Delete** items from categories.  
@@ -34,13 +40,12 @@ This **Shopping List App** is a **React Native** application for managing shoppi
 
 ## ⚙️ Installation
 
-### 1️⃣ Clone the repository:
+### 1⃣ Clone the repository:
 ```bash
 https://github.com/Princemashumu/ShoppingListRedux.git
 ```
 
-
-2️⃣ Install dependencies:
+### 2⃣ Install dependencies:
 ```
 cd ShoppingListRedux
 ```
@@ -48,18 +53,19 @@ cd ShoppingListRedux
 npm install
 ```
 
-3️⃣ Run the app:
+### 3⃣ Run the app:
 For iOS:
 ```
 npx react-native run-ios
 ```
 For Android:
 ```
-
 npx react-native run-android
 ```
+
 ## 📝 Contributing
 If you want to contribute to the project, feel free to fork the repository and submit a pull request with your changes. Make sure to follow the coding standards and write tests for any new features or bug fixes.
 
-## 📄 License
+## 📚 License
 This project is licensed under the MIT License - see the LICENSE file for details.
+
