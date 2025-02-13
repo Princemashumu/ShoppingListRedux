@@ -13,23 +13,30 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mernprince.ShoppingListRedux"
+      "package": "com.mernprince.ShoppingListRedux",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "903907c7-b7ac-4c81-abdd-49ecac8462a3"
+        "projectId": "b7a950b8-a1ba-44a9-a6c7-30c43cd2379f"
       }
     },
-    "owner": "mernprince"
+    "owner": "mernprince",
+    "updates": {
+      "url": "https://u.expo.dev/b7a950b8-a1ba-44a9-a6c7-30c43cd2379f"
+    }
   }
 }
